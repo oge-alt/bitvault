@@ -115,3 +115,29 @@
     (ok true)
   )
 )
+
+;; Vault Management Functions
+(define-public (create-vault (collateral-amount uint))
+  (let 
+    (
+      (vault-id (+ (var-get vault-counter) u1))
+      (new-vault 
+        {
+          owner: tx-sender,
+          id: vault-id
+        }
+      )
+    )
+    (asserts! (> collateral-amount u0) ERR-INVALID-COLLATERAL)
+    (asserts! (< vault-id (+ (var-get vault-counter) u1000)) ERR-INVALID-PARAMETERS)
+    (var-set vault-counter vault-id)
+    (map-set vaults new-vault 
+      {
+        collateral-amount: collateral-amount,
+        stablecoin-minted: u0,
+        created-at: stacks-block-height
+      }
+    )
+    (ok vault-id)
+  )
+)
